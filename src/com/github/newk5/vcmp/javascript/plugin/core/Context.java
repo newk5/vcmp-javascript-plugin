@@ -228,7 +228,7 @@ public class Context {
             String content = new String(Files.readAllBytes(Paths.get(baseDir + "/main.js")));
             v8.executeScript(content, "main.js", 0);
 
-            //check if all the server events all declared, use this 
+            //check if all the server events are declared, use this later to prevent undeclared functions from being called
             for (Method m : AbstractEventHandler.class.getMethods()) {
                 declaredFunctions.put(m.getName(), !v8.getObject(m.getName()).isUndefined());
             }

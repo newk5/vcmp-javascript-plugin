@@ -30,10 +30,7 @@ public class ServerWrapper {
         v8.executeVoidScript("server.setGameSpeed = function(value) { return _ServerOverride_.setGameSpeed(value); }");
         v8.executeVoidScript("server.setGravity = function(value) { return _ServerOverride_.setGravity(value); }");
         v8.executeVoidScript("server.createVehicle = function( modelId,  worldId,  position,  angle,  colours) { return _ServerOverride_.createVehicle(modelId,  worldId,  position,  angle,  colours); }");
-        v8.executeVoidScript("server.createVehicle = function( modelId,  worldId,  position,  angle,  colours) { return _ServerOverride_.createVehicle(modelId,  worldId,  position,  angle,  colours); }");
-
         v8.executeVoidScript("server.setHandlingRule = function( modelId,  ruleIndex,  value) { return _ServerOverride_.setHandlingRule(modelId,  ruleIndex,  value); }");
-
         v8.executeVoidScript("server.addClass = function( teamId,  colour,  modelId,  x,  y,  z,  angle,  weapon1, ammo1 ,weapon2, ammo2, weapon3, ammo3 ) { return _ServerOverride_.addClass(teamId,  colour,  modelId,  x,  y,  z,  angle,  weapon1, ammo1 ,weapon2, ammo2, weapon3, ammo3 ); }");
 
     }
