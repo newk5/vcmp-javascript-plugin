@@ -41,25 +41,24 @@ public class ServerWrapper {
         return v;
     }
 
-   
     public void setGravity(Object value) {
-        server.setGravity((float) value);
+        server.setGravity(new Float(value + ""));
     }
 
     public void setGameSpeed(Object value) {
-        server.setGameSpeed((float) value);
+        server.setGameSpeed(new Float(value + ""));
     }
 
     public void setWaterLevel(Object value) {
-        server.setWaterLevel((float) value);
+        server.setWaterLevel(new Float(value + ""));
     }
 
     public void setAltitudeLimit(Object value) {
-        server.setAltitudeLimit((float) value);
+        server.setAltitudeLimit(new Float(value + ""));
     }
 
     public void setHandlingRule(int modelId, int rule, Object value) {
-        server.setHandlingRule(modelId, rule, (double) value);
+        server.setHandlingRule(modelId, rule, new Double(value + ""));
     }
 
     public Integer addClass(int teamId, Colour colour, int modelId, Object x, Object y, Object z, Object angle, int weaponOne, int weaponOneAmmo, int weaponTwo, int weaponTwoAmmo, int weaponThree, int weaponThreeAmmo) {
