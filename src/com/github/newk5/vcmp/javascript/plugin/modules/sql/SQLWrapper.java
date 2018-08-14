@@ -24,24 +24,24 @@ import java.time.ZoneId;
 import org.pmw.tinylog.Logger;
 
 public class SQLWrapper {
-    
+
     private ThreadPoolExecutor pool = (ThreadPoolExecutor) Executors.newCachedThreadPool();
     private EventLoop eventLoop;
-    
+
     public static void injectClasses() {
         V8JavaAdapter.injectClass("SQLStatement", Statement.class, v8);
         V8JavaAdapter.injectClass(PreparedStatement.class, v8);
         V8JavaAdapter.injectClass(ResultSet.class, v8);
         V8JavaAdapter.injectClass("SQLDate", java.sql.Date.class, v8);
         v8.executeVoidScript("var SQLOptions  = { RETURN_GENERATED_KEYS: 1  }; ");
-        
+
     }
-    
+
     public SQLWrapper() {
     }
-    
+
     public void exec(PreparedStatement p, Boolean async, V8Function callback) {
-        
+
         try {
             p.executeUpdate();
         } catch (SQLException ex) {
@@ -49,14 +49,14 @@ public class SQLWrapper {
             console.error(ex.getCause().toString());
         }
     }
-    
+
     public V8Object query(Object query, Connection c, Boolean async, V8Function callback, boolean multiple) throws SQLException {
-        
+
         if (async != null && async) {
             pool.submit(() -> {
                 try {
                     ResultSet r = null;
-                    
+
                     Statement st = null;
                     if (query instanceof String) {
                         st = c.createStatement();
@@ -65,10 +65,10 @@ public class SQLWrapper {
                         } catch (SQLException sQLException) {
                             st.executeUpdate(query.toString());
                         }
-                        
+
                     } else if (query instanceof Statement) {
                         PreparedStatement p = (PreparedStatement) query;
-                        
+
                         try {
                             r = p.executeQuery();
                         } catch (SQLException sQLException) {
@@ -76,7 +76,7 @@ public class SQLWrapper {
                         }
                         st = (Statement) p;
                     }
-                    
+
                     if (callback != null) {
                         SQLResult res = null;
                         if (r == null) {
@@ -134,17 +134,17 @@ public class SQLWrapper {
                 s.close();
                 return arr;
             }
-            
+
         }
         return null;
     }
-    
+
     public SQLWrapper(EventLoop eventLoop) {
         this.eventLoop = eventLoop;
     }
-    
+
     public Connection newConnection(String url, String userName, String password) {
-        
+
         try {
             if ((userName == null || "".equals(userName)) || (password == null || "".equals(password))) {
                 return DriverManager.getConnection(url);
@@ -156,7 +156,7 @@ public class SQLWrapper {
         }
         return null;
     }
-    
+
     public static V8Object toObject(ResultSet r) throws SQLException {
         if (r == null) {
             return null;
@@ -182,10 +182,14 @@ public class SQLWrapper {
                         java.sql.Date d = (java.sql.Date) obj;
                         LocalDateTime date = d.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
                         val = (V8Value) Context.toJavascript(date);
+                    } else if (obj instanceof java.sql.Timestamp) {
+                        java.sql.Timestamp d = (java.sql.Timestamp) obj;
+                        LocalDateTime date = d.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+                        val = (V8Value) Context.toJavascript(date);
                     } else {
                         val = (V8Value) Context.toJavascript(obj);
                     }
-                    
+
                     v8obj.add(r.getMetaData().getColumnName(i), val);
                 }
             }
@@ -196,7 +200,7 @@ public class SQLWrapper {
         }
         return v8obj;
     }
-    
+
     public static V8Array toArray(ResultSet r) throws SQLException {
         if (r == null) {
             return null;
@@ -204,7 +208,7 @@ public class SQLWrapper {
         V8Array v8Arr = new V8Array(Context.v8);
         while (r.next()) {
             V8Object v8obj = new V8Object(Context.v8);
-            
+
             for (int i = 1; i <= r.getMetaData().getColumnCount(); i++) {
                 Object obj = r.getObject(i);
                 if (obj instanceof Boolean) {
@@ -224,6 +228,10 @@ public class SQLWrapper {
                         java.sql.Date d = (java.sql.Date) obj;
                         LocalDateTime date = d.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
                         val = (V8Value) Context.toJavascript(date);
+                    } else if (obj instanceof java.sql.Timestamp) {
+                        java.sql.Timestamp d = (java.sql.Timestamp) obj;
+                        LocalDateTime date = d.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+                        val = (V8Value) Context.toJavascript(date);
                     } else {
                         val = (V8Value) Context.toJavascript(obj);
                     }
@@ -234,5 +242,5 @@ public class SQLWrapper {
         }
         return v8Arr;
     }
-    
+
 }
