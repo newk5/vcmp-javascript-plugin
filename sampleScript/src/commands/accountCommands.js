@@ -11,7 +11,7 @@ var accountCommands = {
         {
             name: "stats",
             cmd: function (args) {
-                //convert sql date to a normal date
+              
                 var date = args.player.registerDate;
 
                 var formattedDate = DateUtils.formatDate("dd-MM-yyyy HH:mm", date);
