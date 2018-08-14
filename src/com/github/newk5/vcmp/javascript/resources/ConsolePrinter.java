@@ -4,7 +4,6 @@ import print.color.Ansi;
 import print.color.ColoredPrinter;
 import print.color.ColoredPrinterWIN;
 
-
 public class ConsolePrinter {
 
     private ColoredPrinterWIN cpWin = null;
@@ -17,6 +16,19 @@ public class ConsolePrinter {
             cpWin = new ColoredPrinterWIN.Builder(1, false).build();
         } else {
             cpNix = new ColoredPrinter.Builder(1, false).build();
+        }
+    }
+
+    public void green(String msg) {
+        if (cpWin != null) {
+            cpWin.setForegroundColor(Ansi.FColor.GREEN);
+            cpWin.print(msg + "\r\n");
+            cpWin.clear();
+        } else {
+            cpNix.setForegroundColor(Ansi.FColor.GREEN);
+            cpNix.print(msg + "\r\n");
+            cpNix.clear();
+
         }
     }
 
@@ -82,8 +94,7 @@ public class ConsolePrinter {
         }
 
     }
-    
-    
+
     public void warn(String msg) {
 
         if (cpWin != null) {

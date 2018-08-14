@@ -3,6 +3,8 @@ package com.github.newk5.vcmp.javascript.plugin.internals;
 import com.eclipsesource.v8.V8;
 import com.eclipsesource.v8.V8Array;
 import com.eclipsesource.v8.V8Value;
+import com.github.newk5.vcmp.javascript.ServerEventHandler;
+import static com.github.newk5.vcmp.javascript.ServerEventHandler.timerRegistry;
 import com.github.newk5.vcmp.javascript.plugin.core.Context;
 import static com.github.newk5.vcmp.javascript.plugin.core.Context.console;
 import static com.github.newk5.vcmp.javascript.plugin.core.Context.server;
@@ -13,6 +15,7 @@ import com.maxorator.vcmp.java.plugin.integration.player.Player;
 import com.maxorator.vcmp.java.plugin.integration.server.WeaponAndAmmo;
 import com.maxorator.vcmp.java.plugin.integration.vehicle.Vehicle;
 import com.maxorator.vcmp.java.plugin.integration.vehicle.VehicleColours;
+import com.maxorator.vcmp.java.tools.timers.TimerHandle;
 import io.alicorn.v8.annotations.JSIgnore;
 
 public class ServerWrapper {
@@ -23,6 +26,7 @@ public class ServerWrapper {
     //this will override some server functions so that they're more "javascript friendly"
     @JSIgnore
     public void overrideFunctions(V8 v8) {
+        v8.executeVoidScript("server.kick = function(player) { return _ServerOverride_.kickPlayer(player); }");
         v8.executeVoidScript("server.getAllPlayers = function() { return _ServerOverride_.getAllPlayers(); }");
         v8.executeVoidScript("server.getAllVehicles = function() { return _ServerOverride_.getAllVehicles(); }");
         v8.executeVoidScript("server.setAltitudeLimit = function(value) { return _ServerOverride_.setAltitudeLimit(value); }");
@@ -39,6 +43,12 @@ public class ServerWrapper {
         Vehicle v = server.createVehicle(modelId, worldId, position.getX(), position.getY(), position.getZ(), new Float(angle + ""), colours.getPrimary(), colours.getSecondary());
         v.clearData();
         return v;
+    }
+
+    public void kickPlayer(Player p) {
+        timerRegistry.register(false, 50, () -> {
+            p.kick();
+        });
     }
 
     public void setGravity(Object value) {
@@ -80,10 +90,6 @@ public class ServerWrapper {
             v8Arr.push(player);
         }
         return v8Arr;
-    }
-
-    public void testFunc(Object o) {
-        System.out.println(o.getClass().getSimpleName());
     }
 
     public V8Array getAllVehicles() {

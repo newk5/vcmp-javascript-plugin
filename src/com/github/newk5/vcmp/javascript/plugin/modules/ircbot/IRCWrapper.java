@@ -19,7 +19,6 @@ import org.pircbotx.Configuration.Builder;
 import org.pircbotx.PircBotX;
 import org.pmw.tinylog.Logger;
 
-
 public class IRCWrapper {
 
     private static Map<String, BotWrapper> bots = new ConcurrentHashMap<>();
@@ -55,7 +54,7 @@ public class IRCWrapper {
         return null;
     }
 
-    public void run(Builder b, V8Object events)  {
+    public void run(Builder b, V8Object events) {
 
         if (botNames.addIfAbsent(b.getName().toLowerCase())) {
             b.addListener(new IRCBotListener(eventLoop));
@@ -70,7 +69,11 @@ public class IRCWrapper {
                     bot.startBot();
                 } catch (Exception ex) {
                     Logger.error(ex);
-                    console.error(ex.getCause().toString());
+                    if (ex.getCause() != null) {
+                        console.error(ex.getCause().toString());
+                    } else {
+                        console.error(ex.getMessage());
+                    }
                 }
 
             });

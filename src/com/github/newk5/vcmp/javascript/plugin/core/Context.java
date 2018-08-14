@@ -31,6 +31,7 @@ import com.maxorator.vcmp.java.plugin.integration.vehicle.Vehicle;
 import com.maxorator.vcmp.java.plugin.integration.vehicle.VehicleColours;
 import com.github.newk5.vcmp.javascript.plugin.internals.Print;
 import com.github.newk5.vcmp.javascript.plugin.internals.ServerWrapper;
+import com.github.newk5.vcmp.javascript.plugin.internals.utils.DateUtils;
 import com.github.newk5.vcmp.javascript.plugin.modules.crypto.CryptoWrapper;
 import com.github.newk5.vcmp.javascript.plugin.modules.filesystem.FileSystem;
 import com.github.newk5.vcmp.javascript.plugin.modules.ircbot.IRCWrapper;
@@ -59,6 +60,7 @@ import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.DriverManager;
+import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -90,6 +92,13 @@ public class Context {
         return declaredFunctions.getOrDefault(functioName, false);
     }
 
+    public static boolean playerUpdateFunctionsExist() {
+        return functionExists("onPlayerWeaponChange")
+                || functionExists("onPlayerHealthChange")
+                || functionExists("onPlayerArmourChange")
+                || functionExists("onPlayerMove");
+    }
+
     @JSIgnore
     public static V8Value toJavascript(Object o) {
         return (V8Value) V8JavaObjectUtils.translateJavaArgumentToJavascript(o, Context.v8, V8JavaAdapter.getCacheForRuntime(Context.v8));
@@ -117,7 +126,6 @@ public class Context {
 
             Context.server = s;
 
-            Logger.info("V8 Runtime initializing....");
             long startV8 = System.currentTimeMillis();
             Context.v8 = V8.createV8Runtime();
             long endV8 = System.currentTimeMillis();
@@ -132,7 +140,6 @@ public class Context {
             reader = new BufferedReader(new InputStreamReader(in));
             String cmdRegistry = reader.lines().collect(Collectors.joining("\n"));
 
-            Logger.info("Injecting java classes into javascript context....");
             long startJavaclasses = System.currentTimeMillis();
 
             console = new Console();
@@ -179,6 +186,8 @@ public class Context {
             V8JavaAdapter.injectClass(DataInput.class, v8);
             V8JavaAdapter.injectClass(LittleEndianDataInputStream.class, v8);
 
+            /*UTILS*/
+            V8JavaAdapter.injectObject("DateUtils", new DateUtils(), v8);
             //----------------generic-------------------//
             V8JavaAdapter.injectClass(Colour.class, v8);
             V8JavaAdapter.injectObject("Timers", new Timers(), v8);
@@ -232,6 +241,11 @@ public class Context {
             for (Method m : AbstractEventHandler.class.getMethods()) {
                 declaredFunctions.put(m.getName(), !v8.getObject(m.getName()).isUndefined());
             }
+            declaredFunctions.put("onPlayerWeaponChange", !v8.getObject("onPlayerWeaponChange").isUndefined());
+            declaredFunctions.put("onPlayerHealthChange", !v8.getObject("onPlayerHealthChange").isUndefined());
+            declaredFunctions.put("onPlayerArmourChange", !v8.getObject("onPlayerArmourChange").isUndefined());
+            declaredFunctions.put("onPlayerMove", !v8.getObject("onPlayerMove").isUndefined());
+
             declaredFunctions.remove("wait");
             declaredFunctions.remove("equals");
             declaredFunctions.remove("toString");
@@ -241,7 +255,6 @@ public class Context {
             declaredFunctions.remove("notifyAll");
 
             long end = System.currentTimeMillis();
-            System.out.println((end - start) + "ms");
             Logger.info("Javascript context initialized (" + (end - start) + "ms)");
 
         } catch (Exception ex) {

@@ -18,7 +18,7 @@ public class CommonResult extends AsyncResult implements ResultBuilder {
     @Override
     public V8Array build() {
 
-        V8Array args = Context.toJavascriptArgs(super.getParams());
+        V8Array args =V8JavaObjectUtils.translateJavaArgumentsToJavascript(super.getParams(), Context.v8, V8JavaAdapter.getCacheForRuntime(Context.v8));
         return args;
     }
 

@@ -10,7 +10,7 @@ var cmdRegistry = {
 
             controller.commands.forEach(c => {
                 if (c.name == msg) {
-                    var valid = controller.hasAccess(player) == null ? false : controller.hasAccess(player);
+                    var valid = controller.hasAccess == null ? false : controller.hasAccess(player);
                     if (valid) {
                         var args = null;
                         if (c.args != undefined) {
