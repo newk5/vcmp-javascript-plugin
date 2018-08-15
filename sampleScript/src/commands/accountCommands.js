@@ -11,8 +11,8 @@ var accountCommands = {
         {
             name: "stats",
             cmd: function (args) {
-              
-                var date = args.player.registerDate;
+                //convert sql date to normal date
+                var date = DateUtils.parseSQLDate(args.player.registerDate);
 
                 var formattedDate = DateUtils.formatDate("dd-MM-yyyy HH:mm", date);
                 server.sendClientMsg(args.player, new Colour(102, 162, 232), "Kills: " + args.player.kills + " , Joins: " + args.player.joins + ", Registered: " + formattedDate);
