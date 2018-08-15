@@ -36,8 +36,13 @@ public class DateUtils {
             return parseMySQLDate(d);
         }
     }
-
+    
     public LocalDateTime parseMySQLDate(Object date) {
+        if (date instanceof LocalDateTime) {
+            return (LocalDateTime) date;
+        }
+        
+        
         if (date instanceof java.util.Date) {
             java.util.Date d = (java.util.Date) date;
             LocalDateTime da = LocalDateTime.ofInstant(Instant.ofEpochMilli(d.getTime()), TimeZone.getDefault().toZoneId());

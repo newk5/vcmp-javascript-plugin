@@ -26,7 +26,7 @@ public class ConsolePrinter {
             cpWin.clear();
         } else {
             cpNix.setForegroundColor(Ansi.FColor.GREEN);
-            cpNix.print(msg + "\r\n");
+            cpNix.print(msg + "\n");
             cpNix.clear();
 
         }
