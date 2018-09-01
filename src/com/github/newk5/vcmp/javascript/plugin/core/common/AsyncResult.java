@@ -13,7 +13,7 @@ public abstract class AsyncResult {
 
     private V8Function callback;
     private Object[] params;
-
+    private boolean maintainCallback;
     public AsyncResult() {
     }
 
@@ -79,6 +79,20 @@ public abstract class AsyncResult {
 
     public void setParams(Object[] params) {
         this.params = params;
+    }
+
+    /**
+     * @return the maintainCallback
+     */
+    public boolean isMaintainCallback() {
+        return maintainCallback;
+    }
+
+    /**
+     * @param maintainCallback the maintainCallback to set
+     */
+    public void setMaintainCallback(boolean maintainCallback) {
+        this.maintainCallback = maintainCallback;
     }
 
 }

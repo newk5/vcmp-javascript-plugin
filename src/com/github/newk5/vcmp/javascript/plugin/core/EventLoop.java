@@ -26,7 +26,9 @@ public class EventLoop {
                 it.remove();
                 V8Array args = result.build();
                 result.getCallback().call(null, args);
-                result.getCallback().release();
+                if (!result.isMaintainCallback()) {
+                    result.getCallback().release();
+                }
 
             } catch (Exception e) {
                 Logger.error(e);

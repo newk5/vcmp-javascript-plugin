@@ -55,6 +55,7 @@ public class IRCBotListener extends ListenerAdapter {
             V8Function callback = IRCWrapper.getCallBack(e.getBot().getNick());
             if (callback != null) {
                 AsyncResult r = new CommonResult(callback, new Object[]{channel, ircUser, input});
+                r.setMaintainCallback(true);
                 eventLoop.queue.add(r);
             }
 

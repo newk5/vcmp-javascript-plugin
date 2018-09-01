@@ -23,7 +23,7 @@ public class IRCWrapper {
 
     private static Map<String, BotWrapper> bots = new ConcurrentHashMap<>();
     private static CopyOnWriteArrayList<String> botNames = new CopyOnWriteArrayList<>();
-    private ThreadPoolExecutor pool = (ThreadPoolExecutor) Executors.newCachedThreadPool();
+    private ThreadPoolExecutor pool = (ThreadPoolExecutor) Executors.newFixedThreadPool(2);
     private EventLoop eventLoop;
 
     public IRCWrapper(EventLoop eventLoop) {
