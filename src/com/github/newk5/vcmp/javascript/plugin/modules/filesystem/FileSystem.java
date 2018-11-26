@@ -78,7 +78,7 @@ public class FileSystem {
 
     public String readFile(String filePath, V8Function callback) {
         if (callback == null) {
-            File f = new File(filePath);
+            File f = new File(filePath).getAbsoluteFile();
             if (f.exists() && f.isFile()) {
                 try {
                     String contents = new String(Files.readAllBytes(Paths.get(filePath)));
@@ -94,7 +94,7 @@ public class FileSystem {
 
         } else {
             pool.submit(() -> {
-                File f = new File(filePath);
+                File f = new File(filePath).getAbsoluteFile();
                 if (f.exists() && f.isFile()) {
                     try {
                         String contents = new String(Files.readAllBytes(Paths.get(filePath)));

@@ -76,7 +76,7 @@ public class ServerWrapper {
         try {
             v = new Vector(new Float(x + ""), new Float(y + ""), new Float(z + ""));
         } catch (Exception e) {
-            console.error("Error - server.addClass, xyz coordinates must be floats!");
+            console.error("Error - server.addClass, xyz coordinates must be floats. Use the function parseFloat(value) to convert values to float.");
             return null;
         }
         return server.addPlayerClass(teamId, colour.getHex(), modelId, v.getX(), v.getY(), v.getZ(), new Float(angle + ""), weaponOne, weaponOneAmmo, weaponTwo, weaponTwoAmmo, weaponThree, weaponThreeAmmo);

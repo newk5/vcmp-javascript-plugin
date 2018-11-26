@@ -117,14 +117,14 @@ public class Context {
     @JSIgnore
     public static void load(Server s, EventLoop eventLoop) {
         try {
-
+            
             long start = System.currentTimeMillis();
             System.setProperty("user.dir", System.getProperty("user.dir") + "/src/");
 
             String baseDir = System.getProperty("user.dir");
 
             Context.eventLoop = eventLoop;
-
+            
             Context.server = s;
 
             long startV8 = System.currentTimeMillis();
