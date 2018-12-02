@@ -122,7 +122,7 @@ public class FileSystem {
         if (callback == null) {
             try {
                 Path p = Paths.get(filePath);
-                if (p.toFile().exists() && p.toFile().isDirectory()) {
+                if (p != null && p.toFile().exists() && p.toFile().isDirectory()) {
                     Files.walk(p).sorted(Comparator.reverseOrder())
                             .forEach(t -> {
                                 try {
@@ -137,7 +137,7 @@ public class FileSystem {
                 return false;
             } catch (IOException ex) {
                 Logger.error(ex);
-                console.error(ex.getCause().toString());
+                console.error(ex.getCause() != null ? ex.getCause().toString(): ex);
                 return false;
             }
 
@@ -145,7 +145,7 @@ public class FileSystem {
             pool.submit(() -> {
                 try {
                     Path p = Paths.get(filePath);
-                    if (p.toFile().exists() && p.toFile().isDirectory()) {
+                    if (p != null && p.toFile().exists() && p.toFile().isDirectory()) {
                         Files.walk(p).sorted(Comparator.reverseOrder())
                                 .forEach(t -> {
                                     try {

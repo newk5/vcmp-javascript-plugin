@@ -22,7 +22,7 @@ public class Stream {
         dataOutputStream.writeUTF(data);
     }
 
-    public void writeByte(int data) throws IOException {
+    public void writeByte(int data) throws IOException { 
         dataOutputStream.write(data);
     }
 

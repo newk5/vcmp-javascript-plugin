@@ -785,7 +785,7 @@ public class ServerEventHandler extends RootEventHandler {
             Object p = Context.toJavascript(player);
 
             DataInput input = new LittleEndianDataInputStream(new ByteArrayInputStream(data));
-
+             
             Object stream = Context.toJavascript(input);
 
             try {
