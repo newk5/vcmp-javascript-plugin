@@ -1,15 +1,14 @@
-package com.github.newk5.vcmp.javascript.plugin.core;
+package com.github.newk5.vcmp.javascript.plugin;
 
-import com.github.newk5.vcmp.javascript.plugin.internals.utils.NpmUtils;
-import com.github.newk5.vcmp.javascript.resources.FileLoader;
-import com.github.newk5.vcmp.javascript.plugin.internals.Console;
+import com.github.newk5.vcmp.javascript.plugin.utils.NpmUtils;
+import com.github.newk5.vcmp.javascript.plugin.resources.FileLoader;
+import com.github.newk5.vcmp.javascript.plugin.output.Console;
 import com.eclipsesource.v8.V8;
 import com.eclipsesource.v8.V8Array;
 import com.eclipsesource.v8.V8Object;
 import com.eclipsesource.v8.V8Value;
-import com.github.newk5.vcmp.javascript.plugin.internals.Stream;
-import com.github.newk5.vcmp.javascript.plugin.modules.sql.SQLWrapper;
-import com.github.newk5.vcmp.javascript.plugin.modules.httpclient.OkHttpWrapper;
+import com.github.newk5.vcmp.javascript.plugin.internals.Runtime;
+import com.github.newk5.vcmp.javascript.plugin.entities.Stream;
 import com.maxorator.vcmp.java.plugin.integration.generic.Colour;
 import com.maxorator.vcmp.java.plugin.integration.generic.Entity;
 import com.maxorator.vcmp.java.plugin.integration.generic.Quaternion;
@@ -23,18 +22,14 @@ import com.maxorator.vcmp.java.plugin.integration.server.CoordBlipInfo;
 import com.maxorator.vcmp.java.plugin.integration.server.KeyBind;
 import com.maxorator.vcmp.java.plugin.integration.server.MapBounds;
 import com.maxorator.vcmp.java.plugin.integration.server.Server;
-import com.github.newk5.vcmp.javascript.plugin.internals.Timers;
+import com.github.newk5.vcmp.javascript.plugin.utils.Timers;
 import com.maxorator.vcmp.java.plugin.integration.server.WastedSettings;
 import com.maxorator.vcmp.java.plugin.integration.server.WeaponAndAmmo;
 import com.maxorator.vcmp.java.plugin.integration.vehicle.HandlingRule;
 import com.maxorator.vcmp.java.plugin.integration.vehicle.Vehicle;
 import com.maxorator.vcmp.java.plugin.integration.vehicle.VehicleColours;
-import com.github.newk5.vcmp.javascript.plugin.internals.Print;
-import com.github.newk5.vcmp.javascript.plugin.internals.ServerWrapper;
-import com.github.newk5.vcmp.javascript.plugin.internals.utils.DateUtils;
-import com.github.newk5.vcmp.javascript.plugin.modules.crypto.CryptoWrapper;
-import com.github.newk5.vcmp.javascript.plugin.modules.filesystem.FileSystem;
-import com.github.newk5.vcmp.javascript.plugin.modules.ircbot.IRCWrapper;
+import com.github.newk5.vcmp.javascript.plugin.output.Print;
+import com.github.newk5.vcmp.javascript.plugin.utils.DateUtils;
 import com.google.common.io.LittleEndianDataInputStream;
 import com.maxorator.vcmp.java.plugin.integration.AbstractEventHandler;
 import com.maxorator.vcmp.java.plugin.integration.placeable.PickupOption;
@@ -59,8 +54,6 @@ import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.sql.DriverManager;
-import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -73,7 +66,6 @@ public class Context {
 
     public static V8 v8;
     public static Server server;
-    private static EventLoop eventLoop;
     public static Console console;
 
     private static Map<String, Boolean> declaredFunctions = new HashMap<>();
@@ -83,8 +75,8 @@ public class Context {
         // Context.v8.release();
         V8JavaObjectUtils.releaseV8Resources(v8);
         Context.v8 = null;
-        eventLoop.queue.clear();
-        Context.load(server, eventLoop);
+        Runtime.eventLoop.queue.clear();
+        Context.load(server);
 
     }
 
@@ -115,23 +107,18 @@ public class Context {
     }
 
     @JSIgnore
-    public static void load(Server s, EventLoop eventLoop) {
+    public static void load(Server s) {
         try {
-            
+            Runtime.load();
             long start = System.currentTimeMillis();
             System.setProperty("user.dir", System.getProperty("user.dir") + "/src/");
 
             String baseDir = System.getProperty("user.dir");
 
-            Context.eventLoop = eventLoop;
-            
+
             Context.server = s;
 
-            long startV8 = System.currentTimeMillis();
-            Context.v8 = V8.createV8Runtime();
-            long endV8 = System.currentTimeMillis();
-
-            Logger.info("V8 Runtime initialized (" + (endV8 - startV8) + "ms)");
+            Context.v8 = Runtime.v8;
 
             InputStream in = FileLoader.class.getResourceAsStream("jvm-npm.js");
             BufferedReader reader = new BufferedReader(new InputStreamReader(in));
@@ -143,7 +130,7 @@ public class Context {
 
             long startJavaclasses = System.currentTimeMillis();
 
-            console = new Console();
+            console = Runtime.console;
             V8JavaAdapter.injectObject("console", console, v8);
             V8JavaAdapter.injectObject("server", server, v8);
 
@@ -152,12 +139,8 @@ public class Context {
             V8JavaAdapter.injectObject("_ServerOverride_", sw, v8);
 
             V8JavaAdapter.injectObject("NPMUtils", new NpmUtils(), v8);
-            V8JavaAdapter.injectObject("CryptoWrapper", new CryptoWrapper(eventLoop), v8);
-            V8JavaAdapter.injectObject("OkHttpWrapper", new OkHttpWrapper(eventLoop), v8);
-            V8JavaAdapter.injectObject("IRCWrapper", new IRCWrapper(eventLoop), v8);
-            V8JavaAdapter.injectObject("SQLWrapper", new SQLWrapper(eventLoop), v8);
-            V8JavaAdapter.injectObject("FileSystemWrapper", new FileSystem(eventLoop), v8);
 
+            
             Context.v8.executeVoidScript(npm);
             Context.v8.executeVoidScript(cmdRegistry);
             FileLoader loader = new FileLoader(console);
@@ -179,11 +162,7 @@ public class Context {
             V8JavaAdapter.injectClass("Stream", Stream.class, v8);
 
             /* MODULES */
-            DriverManager.registerDriver(new com.mysql.jdbc.Driver());
-            Class.forName("org.sqlite.JDBC");
-            OkHttpWrapper.injectClasses();
-            SQLWrapper.injectClasses();
-            IRCWrapper.injectClasses();
+         
             V8JavaAdapter.injectClass(DataInput.class, v8);
             V8JavaAdapter.injectClass(LittleEndianDataInputStream.class, v8);
 

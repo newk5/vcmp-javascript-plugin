@@ -1,4 +1,4 @@
-package com.github.newk5.vcmp.javascript.plugin.internals;
+package com.github.newk5.vcmp.javascript.plugin;
 
 import com.github.newk5.vcmp.javascript.ServerEventHandler;
 import com.maxorator.vcmp.java.plugin.integration.player.Player;

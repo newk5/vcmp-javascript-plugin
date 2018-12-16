@@ -1,21 +1,16 @@
-package com.github.newk5.vcmp.javascript.plugin.internals;
+package com.github.newk5.vcmp.javascript.plugin;
 
 import com.eclipsesource.v8.V8;
 import com.eclipsesource.v8.V8Array;
 import com.eclipsesource.v8.V8Value;
-import com.github.newk5.vcmp.javascript.ServerEventHandler;
 import static com.github.newk5.vcmp.javascript.ServerEventHandler.timerRegistry;
-import com.github.newk5.vcmp.javascript.plugin.core.Context;
-import static com.github.newk5.vcmp.javascript.plugin.core.Context.console;
-import static com.github.newk5.vcmp.javascript.plugin.core.Context.server;
+import static com.github.newk5.vcmp.javascript.plugin.Context.console;
+import static com.github.newk5.vcmp.javascript.plugin.Context.server;
 import com.maxorator.vcmp.java.plugin.integration.generic.Colour;
 import com.maxorator.vcmp.java.plugin.integration.generic.Vector;
-import com.maxorator.vcmp.java.plugin.integration.placeable.Pickup;
 import com.maxorator.vcmp.java.plugin.integration.player.Player;
-import com.maxorator.vcmp.java.plugin.integration.server.WeaponAndAmmo;
 import com.maxorator.vcmp.java.plugin.integration.vehicle.Vehicle;
 import com.maxorator.vcmp.java.plugin.integration.vehicle.VehicleColours;
-import com.maxorator.vcmp.java.tools.timers.TimerHandle;
 import io.alicorn.v8.annotations.JSIgnore;
 
 public class ServerWrapper {

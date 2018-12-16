@@ -1,9 +1,9 @@
-package com.github.newk5.vcmp.javascript.resources;
+package com.github.newk5.vcmp.javascript.plugin.resources;
 
 import com.eclipsesource.v8.JavaCallback;
 import com.eclipsesource.v8.V8Array;
 import com.eclipsesource.v8.V8Object;
-import com.github.newk5.vcmp.javascript.plugin.internals.Console;
+import com.github.newk5.vcmp.javascript.plugin.output.Console;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;

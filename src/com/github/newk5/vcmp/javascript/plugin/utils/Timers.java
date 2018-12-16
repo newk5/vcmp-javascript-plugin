@@ -1,9 +1,10 @@
-package com.github.newk5.vcmp.javascript.plugin.internals;
+package com.github.newk5.vcmp.javascript.plugin.utils;
 
 import com.eclipsesource.v8.V8Array;
 import com.eclipsesource.v8.V8Function;
 import static com.github.newk5.vcmp.javascript.ServerEventHandler.timerRegistry;
-import com.github.newk5.vcmp.javascript.plugin.core.Context;
+import com.github.newk5.vcmp.javascript.plugin.Context;
+import com.github.newk5.vcmp.javascript.plugin.entities.GameTimer;
 import io.alicorn.v8.V8JavaAdapter;
 import io.alicorn.v8.V8JavaObjectUtils;
 

@@ -1,5 +1,5 @@
 
-package com.github.newk5.vcmp.javascript.plugin.internals.utils;
+package com.github.newk5.vcmp.javascript.plugin.utils;
 
 import java.math.BigInteger;
 import java.sql.SQLException;

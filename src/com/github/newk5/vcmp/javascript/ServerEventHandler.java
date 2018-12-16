@@ -2,11 +2,13 @@ package com.github.newk5.vcmp.javascript;
 
 import com.eclipsesource.v8.V8Array;
 import com.eclipsesource.v8.V8Object;
-import com.github.newk5.vcmp.javascript.plugin.core.Context;
+import com.github.newk5.vcmp.javascript.plugin.Context;
 import com.eclipsesource.v8.V8ScriptExecutionException;
-import com.github.newk5.vcmp.javascript.plugin.core.EventLoop;
-import com.github.newk5.vcmp.javascript.plugin.internals.Console;
-import com.github.newk5.vcmp.javascript.plugin.internals.PlayerUpdateEvents;
+import com.github.newk5.vcmp.javascript.plugin.Context;
+import static com.github.newk5.vcmp.javascript.plugin.internals.Runtime.eventLoop;
+import com.github.newk5.vcmp.javascript.plugin.output.Console;
+import com.github.newk5.vcmp.javascript.plugin.PlayerUpdateEvents;
+import com.github.newk5.vcmp.javascript.plugin.PlayerUpdateEvents;
 import com.google.common.io.LittleEndianDataInputStream;
 import com.maxorator.vcmp.java.plugin.integration.RootEventHandler;
 import com.maxorator.vcmp.java.plugin.integration.placeable.CheckPoint;
@@ -29,7 +31,6 @@ public class ServerEventHandler extends RootEventHandler {
     protected CommandRegistry commandRegistry;
     public static TimerRegistry timerRegistry;
 
-    private EventLoop eventLoop;
     private PlayerUpdateEvents playerUpdateEvents;
 
     public ServerEventHandler(Server server) {
@@ -38,11 +39,6 @@ public class ServerEventHandler extends RootEventHandler {
         this.commandRegistry = new CommandRegistry(server);
         this.timerRegistry = new TimerRegistry();
 
-        this.eventLoop = new EventLoop();
-        Context.load(server, eventLoop);
-        if (Context.playerUpdateFunctionsExist()) {
-            playerUpdateEvents = new PlayerUpdateEvents(this);
-        }
     }
 
     public static void exception(V8ScriptExecutionException e) {
@@ -157,7 +153,13 @@ public class ServerEventHandler extends RootEventHandler {
 
     @Override
     public boolean onServerInitialise() {
-        Console.printer.green("Javascript plugin loaded");
+        Context.load(server);
+        if (Context.playerUpdateFunctionsExist()) {
+            playerUpdateEvents = new PlayerUpdateEvents(this);
+        }
+        System.out.println("");
+        Console.printer.yellow("Javascript plugin loaded");
+        System.out.println("");
         if (Context.functionExists("onServerInitialise")) {
             try {
                 Context.v8.executeJSFunction("onServerInitialise");
@@ -785,7 +787,7 @@ public class ServerEventHandler extends RootEventHandler {
             Object p = Context.toJavascript(player);
 
             DataInput input = new LittleEndianDataInputStream(new ByteArrayInputStream(data));
-             
+
             Object stream = Context.toJavascript(input);
 
             try {

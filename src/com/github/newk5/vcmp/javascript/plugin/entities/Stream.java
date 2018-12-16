@@ -1,4 +1,4 @@
-package com.github.newk5.vcmp.javascript.plugin.internals;
+package com.github.newk5.vcmp.javascript.plugin.entities;
 
 import com.google.common.io.LittleEndianDataOutputStream;
 import com.maxorator.vcmp.java.plugin.integration.player.Player;
