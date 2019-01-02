@@ -9,11 +9,16 @@ import static com.github.newk5.vcmp.javascript.plugin.Context.server;
 import com.maxorator.vcmp.java.plugin.integration.generic.Colour;
 import com.maxorator.vcmp.java.plugin.integration.generic.Vector;
 import com.maxorator.vcmp.java.plugin.integration.player.Player;
+import com.maxorator.vcmp.java.plugin.integration.server.CoordBlipInfo;
 import com.maxorator.vcmp.java.plugin.integration.vehicle.Vehicle;
 import com.maxorator.vcmp.java.plugin.integration.vehicle.VehicleColours;
 import io.alicorn.v8.annotations.JSIgnore;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ServerWrapper {
+
+    public List<CoordBlipInfo> createdBlips = new ArrayList();
 
     public ServerWrapper() {
     }
@@ -21,6 +26,10 @@ public class ServerWrapper {
     //this will override some server functions so that they're more "javascript friendly"
     @JSIgnore
     public void overrideFunctions(V8 v8) {
+        v8.executeVoidScript("server.createCoordBlip = function(blip) { return _ServerOverride_.createCoordBlip(blip); }");
+        v8.executeVoidScript("server.destroyCoordBlip = function(idx) { return _ServerOverride_.destroyCoordBlip(idx); }");
+        v8.executeVoidScript("server.getCoordBlipInfo = function(idx) { return _ServerOverride_.getCoordBlipInfo(idx); }");
+        
         v8.executeVoidScript("server.kick = function(player) { return _ServerOverride_.kickPlayer(player); }");
         v8.executeVoidScript("server.getAllPlayers = function() { return _ServerOverride_.getAllPlayers(); }");
         v8.executeVoidScript("server.getAllVehicles = function() { return _ServerOverride_.getAllVehicles(); }");
@@ -32,6 +41,30 @@ public class ServerWrapper {
         v8.executeVoidScript("server.setHandlingRule = function( modelId,  ruleIndex,  value) { return _ServerOverride_.setHandlingRule(modelId,  ruleIndex,  value); }");
         v8.executeVoidScript("server.addClass = function( teamId,  colour,  modelId,  x,  y,  z,  angle,  weapon1, ammo1 ,weapon2, ammo2, weapon3, ammo3 ) { return _ServerOverride_.addClass(teamId,  colour,  modelId,  x,  y,  z,  angle,  weapon1, ammo1 ,weapon2, ammo2, weapon3, ammo3 ); }");
 
+    }
+
+    public Integer createCoordBlip(CoordBlipInfo b) {
+        Integer idx = server.createCoordBlip(b);
+        b.setServer(server);
+        createdBlips.add(b);
+        return idx;
+
+    }
+
+    public void destroyCoordBlip(Integer idx) {
+        createdBlips.removeIf(b -> {
+            return b.getIndex() == idx;
+        });
+        server.destroyCoordBlip(idx);
+    }
+
+    public CoordBlipInfo getCoordBlipInfo(Integer idx) {
+        for (CoordBlipInfo b : createdBlips) {
+            if (b.getIndex() == idx) {
+                return b;
+            }
+        }
+        return null;
     }
 
     public Vehicle createVehicle(int modelId, int worldId, Vector position, Object angle, VehicleColours colours) {

@@ -15,6 +15,7 @@ import com.maxorator.vcmp.java.plugin.integration.placeable.CheckPoint;
 import com.maxorator.vcmp.java.plugin.integration.placeable.GameObject;
 import com.maxorator.vcmp.java.plugin.integration.placeable.Pickup;
 import com.maxorator.vcmp.java.plugin.integration.player.Player;
+import com.maxorator.vcmp.java.plugin.integration.server.CoordBlipInfo;
 import com.maxorator.vcmp.java.plugin.integration.server.Server;
 import com.maxorator.vcmp.java.plugin.integration.vehicle.Vehicle;
 import com.maxorator.vcmp.java.tools.commands.CommandRegistry;
